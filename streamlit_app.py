@@ -6,9 +6,9 @@ st.set_page_config(
     initial_sidebar_state= 'expanded'
 
 )
-
-lab_01 = st.Page('Labs/lab_01.py', title="Lab 1")
-lab_02 = st.Page('Labs/lab_02.py', title = "Lab 2")
+#welcome_page = st.Page('')
+lab_01 = st.Page('Pages/lab_01.py', title="Lab 1")
+lab_02 = st.Page('Pages/lab_02.py', title = "Lab 2", default=True)
 
 pg = st.navigation([lab_01, lab_02])
 st.set_page_config(page_title='Lab Manager')
