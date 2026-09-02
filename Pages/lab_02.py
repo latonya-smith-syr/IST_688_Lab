@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Show title and description.
-st.title("📄 Document question answering")
+st.title("📄 Document Summarizer")
 st.write(
     "Upload a document below and ask a question about it – GPT will answer! ")
 
@@ -11,7 +11,7 @@ secret_key = st.secrets.OPEN_API_KEY
 # Ask user for their OpenAI API key via `st.text_input`.
 # Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
 # via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text("Good for you! I will use my own API Key")
+#openai_api_key = st.text("Good for you! I will use my own API Key")
 
 
     # Create an OpenAI client.
@@ -30,7 +30,7 @@ uploaded_file = st.file_uploader(
 #)
 
 
-st.sidebar.title('Choose a Summarization Method and Model')
+st.sidebar.title('Choose a Summarization Method')
 
 summary_option = add_selectbox = st.sidebar.selectbox(
     'Options', (
