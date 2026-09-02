@@ -23,26 +23,52 @@ uploaded_file = st.file_uploader(
     )
 
     # Ask the user for a question via `st.text_area`.
-question = st.text_area(
-    "Now ask a question about the document!",
-    placeholder="Can you give me a short summary?",
-    disabled=not uploaded_file,
+#question = st.text_area(
+#    "Now ask a question about the document!",
+#    placeholder="Can you give me a short summary?",
+#    disabled=not uploaded_file,
+#)
+
+
+st.sidebar.title('Choose a Summarization Method and Model')
+
+summary_option = add_selectbox = st.sidebar.selectbox(
+    'Options', (
+        'Summarize the document in 100 words',
+        'Summarize the document in 2 connecting paragraphs',
+        'Summarize the document in 5 bullet points'
+    )
 )
 
-if uploaded_file and question:
+#st.write(summary_option, "Summarization Options")
+
+#mini is advanced and nano is less advanced
+advanced_model = st.checkbox('Advanced Model')
+
+if advanced_model:
+    model_type = "gpt-5-mini"
+else:
+    model_type = "gpt-5-nano"
+
+if uploaded_file:
 
         # Process the uploaded file and question.
     document = uploaded_file.read().decode()
     messages = [
         {
+            "role":"system",
+            "content": f"Use this instruction of for the document: {summary_option} \n\n---\n\n"
+
+        },
+        {
                 "role": "user",
-                "content": f"Here's a document: {document} \n\n---\n\n {question}",
+                "content": f"Here's a document: {document} \n\n---\n\n",
         }
     ]
 
         # Generate an answer using the OpenAI API.
     stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model= model_type,
         messages=messages,
         stream=True,
     )
