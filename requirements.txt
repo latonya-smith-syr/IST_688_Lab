@@ -1,6 +1,5 @@
 streamlit
 openai
-sys
 tiktoken
 chromadb
 pysqlite3-binary

@@ -6,21 +6,75 @@ import chromadb
 from pathlib import Path
 from PyPDF2 import PdfReader
 
-__import__('pysqlit3')
+
+__import__('pysqlite3')
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-st.title("Lab 4 chatbot")
-
-chroma_client = chromadb.PersistentClient(path='./ChromaDB_for_Lab')
+chroma_client = chromadb.PersistentClient(path='./ChromaDB_for_Lab4')
 collection = chroma_client.get_or_create_collection('Lab4collection')
-
-st.write("Chatbot Demo")
-
-model = "gpt-4o-mini"
 
 if 'client' not in st.session_state:
     api_key = st.secrets["OPEN_API_KEY"]
     st.session_state.client= OpenAI(api_key=api_key)
+
+def extract_text_from_pdf(pdf_path):
+    reader = PdfReader(pdf_path)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    
+
+def add_to_collection(collection, text, file_name):
+    #Creating an embedding from pdf
+    client = st.session_state.client
+    response = client.embeddings.create(
+        input= text,
+        model= 'text-embedding-3-small'
+    )
+    #Get the embedding
+    embedding = response.data[0].embedding
+
+    #Add embedding and document to ChromaDB
+    collection.add(
+        documents=[text],
+        ids=file_name,
+        embeddings= [embedding]
+    )
+
+def load_pdfs_to_collection(folder_path, collection):
+    if collection.count() == 0:
+        loaded = load_pdfs_to_collection('./PDF_files_lab4', collection)
+        
+
+st.title("Lab 4 chatbot")
+st.write("Chatbot Demo")
+
+topic = st.sidebar.text_input('Topic', placeholder='Type your topic (e.g., GenAI)...')
+
+if topic:
+    client = st.session_state.openai_client
+    response = client.embeddings.create(
+        input = topic,
+        model= 'text-embedding-3-small'
+    )
+    query_embedding = response.data[0].embedding
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=3 #The number of closest documents to return
+    )
+    #Display the results
+    st.subheader(f"Results for: {topic}")
+    for i in range(len(results['documents'][0])):
+        doc = results['documents'][0][i]
+        doc_id = results['ids'][0][i]
+
+        st.write(f'**{i+1}. {doc_id}**')
+else:
+    st.info('Enter a topic in the sidebar to search the collection')
+
+    
+model = "gpt-4o-mini"
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
@@ -33,6 +87,10 @@ buffer_type = st.sidebar.selectbox('Buffer type', ('Last 2 responses', 'Token-ba
 
 system_prompt = {"role": "system", "content":  "Explain all answers simply enough for a 10-year-old to understand.After the user's first response ask them this:Do you want more information?. "
             "If they say yes, give them more information and then ask them specifically: Do you want more information?. If they say no, ask them specifically How can I help you?"}
+
+
+
+
 
 def count_tokens(text, model="gpt-4o-mini"):
     encoding = tiktoken.encoding_for_model(model)
