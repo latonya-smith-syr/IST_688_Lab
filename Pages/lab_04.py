@@ -1,10 +1,10 @@
 import streamlit as st
 from openai import OpenAI
 import tiktoken
-import sys
 import chromadb
 from pathlib import Path
 from PyPDF2 import PdfReader
+import sys
 
 
 __import__('pysqlite3')
