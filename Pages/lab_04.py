@@ -60,7 +60,7 @@ if 'Lab4_VectorDB' not in st.session_state:
 
 collection = st.session_state.Lab4_VectorDB
 
-st.title("Lab 4 chatbot")
+st.title("Lab 4 RAG chatbot")
 st.write("Chatbot Demo")
 
 #topic = st.sidebar.text_input('Topic', placeholder='Type your topic (e.g., GenAI)...')
