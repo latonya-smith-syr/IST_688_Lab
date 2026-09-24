@@ -1,7 +1,7 @@
 import requests
 
 def get_current_weather(location):
-    url = f'https://wttr.in{location}?format=j1'
+    url = f'https://wttr.in/{location}?format=j1'
     response = requests.get(url, timeout=10)
     if response.status_code != 200:
         raise Exception(f"wttr.in error:status {response.status_code}")
