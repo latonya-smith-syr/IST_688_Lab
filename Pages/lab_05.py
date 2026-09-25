@@ -11,16 +11,6 @@ if 'client' not in st.session_state:
     api_key = st.secrets["OPEN_API_KEY"]
     st.session_state.client= OpenAI(api_key=api_key)
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
-if 'client' not in st.session_state:
-    api_key = st.secrets["OPEN_API_KEY"]
-    st.session_state.client= OpenAI(api_key=api_key)
-
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
 def get_current_weather(location):
     url = f'https://wttr.in/{location}?format=j1'
     response = requests.get(url, timeout=10)
@@ -59,24 +49,21 @@ tools = [
                 },
             },
         },
-         "required": ["location"],
+            "required": ["location"],
     },
 
 }
 ]
 
+location = st.text_input("Input City, State")
 
-if prompt := st.chat_input("I "):    
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+client = st.session_state.client
 
+if st.button("Get Weather", type="primary"):
     client = st.session_state.client
 
-    messages = [{
-        "role":"user",
-        "content": "Tell me what I should wear today using the information baout the weather."
-    }]
+    user_text = f"What should I wear today? Location: {location}" if location else "What should I wear today?"
+    messages = [{"role": "user", "content": user_text}]
 
     response = client.chat.completions.create(
         model=model,
@@ -85,5 +72,6 @@ if prompt := st.chat_input("I "):
         tool_choice="auto"
     )
 
-    response_message = response.choices[0].message
-    messages.append(response_message.to_dict())
+response_message = response.choices[0].message
+st.write(response_message.to_dict())
+#essages.append(response_message.to_dict())
