@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
 from openai import OpenAI
+import json
 
 
 st.title("What To Wear Bot")
@@ -55,23 +56,54 @@ tools = [
 }
 ]
 
-location = st.text_input("Input City, State")
-
 client = st.session_state.client
 
+messages = [{
+    "role": "user",
+    "content": "Would you like to know the weather for today?"
+}]
+
+response = client.chat.completions.create(
+    model=model,
+    messages = messages,
+    tools = tools,
+    tool_choice="auto"
+)
+
+response_message = response.choices[0].messgae
+messages.append(response_message.to_dict())
+
+tool_calls = response_message.tool_calls
+if tool_calls:
+    tool_call_id = tool_calls[0].id
+    tool_function_name = tool_calls[0].function.name
+    tool_query_string = json.loads(tool_calls[0].function.arguments)['query']
+else:
+    print(response_message.content)
+
+
+location = st.text_input("Input City, State")
+
+
 if st.button("Get Weather", type="primary"):
-    client = st.session_state.client
 
     user_text = f"What should I wear today? Location: {location}" if location else "What should I wear today?"
-    messages = [{"role": "user", "content": user_text}]
+    messages = ({"role": "user", "content": user_text})
+    messages.append({
+        "role": "tool",
+        "tool_call_id": tool_call_id,
+        "name": get_current_weather,
+        "content": location
+    })
 
-    response = client.chat.completions.create(
-        model=model,
+    model_response_with_function_call = client.chat.completions.create(
+        model = model,
         messages=messages,
-        tools=tools,
-        tool_choice="auto"
     )
+    print(f"Result in database: {model_response_with_function_call.choices[0].message_content}")
+else:
+    print(f"Error: function {get_current_weather} does not exist")
 
-    response_message = response.choices[0].message
-    messages.append(response_message.to_dict())
-    st.write(response_message.to_dict())
+    #response_message = response.choices[0].message.content
+    #messages.append(response_message.to_dict())
+
