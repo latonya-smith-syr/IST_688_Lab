@@ -72,5 +72,5 @@ if st.button("Get Weather", type="primary"):
         tool_choice="auto"
     )
 
-response_message = response.choices[0].message
-messages.append(response_message.to_dict())
+    response_message = response.choices[0].message
+    messages.append(response_message.to_dict())
