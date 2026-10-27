@@ -7,7 +7,7 @@ import langchain
 import langchain_openai
 from langchain.agents import create_agent
 
-os.environ["OPEN_API_KEY"] = st.secrets["OPEN_API_KEY"]
+os.environ["OPENAI_API_KEY"] = st.secrets["OPEN_API_KEY"]
 
 
 def get_current_weather(location):
@@ -39,7 +39,7 @@ def get_current_weather(location):
     }
 
 location = st.text_input("Input City, State")
-st.button("Get Weather", type="primary")
+#st.button("Get Weather", type="primary")
 
 agent = create_agent(
     model= "openai:gpt-5-mini", 
@@ -53,4 +53,14 @@ if st.button("Get Weather", type="primary"):
 )
 
     message = st.chat_message("assistant")
-    message.write(result["messages"].content)
+    message.write(result["messages"][3].content)
+
+    with st.expander("Behind the scenes"):
+        for message in result["messages"]:
+            st.write(f"**{message.type}**")
+            st.write(message.content)
+            if message.type == "ai" and message.tool_calls:
+                st.write(message.tool_calls)
+
+    #
+
