@@ -121,24 +121,24 @@ if st.session_state.source is not None:
         st.session_state.messages.append({"role": "assistant", "content": result})
 
 
-"""
-a. How do the image payload and audio transcription request differ?
+# """
+# a. How do the image payload and audio transcription request differ?
 
-The image is sent directly to a vision model as base64 data alongside the text prompt in one 
-request, while the audio is first uploaded as a file to a separate transcription endpoint that returns text, 
-which is then sent to the model in a second step.
+# The image is sent directly to a vision model as base64 data alongside the text prompt in one 
+# request, while the audio is first uploaded as a file to a separate transcription endpoint that returns text, 
+# which is then sent to the model in a second step.
 
 
-b. What improved after your prompt revision? How did the app handle missing
-information?
+# b. What improved after your prompt revision? How did the app handle missing
+# information?
 
-After revising the prompt, the responses became more specific and consistent, and when 
-information was missing the app stated that it wasn’t present instead of guessing.
+# After revising the prompt, the responses became more specific and consistent, and when 
+# information was missing the app stated that it wasn’t present instead of guessing.
 
-c. What can transcription lose from audio? What additional processing would video
-require?
+# c. What can transcription lose from audio? What additional processing would video
+# require?
 
-Transcription loses tone, emotion, emphasis, speaker identity, and non-speech sounds, 
-while video would also require extracting the audio, sampling frames, and aligning them by 
-timestamp.
-"""
+# Transcription loses tone, emotion, emphasis, speaker identity, and non-speech sounds, 
+# while video would also require extracting the audio, sampling frames, and aligning them by 
+# timestamp.
+# """
